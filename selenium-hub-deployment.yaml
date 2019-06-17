@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: selenium-hub
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: selenium-hub
+    spec:
+      containers:
+      - name: selenium-hub
+        image: selenium/hub:3.4.0
+        ports:
+          - containerPort: 4444
+        resources:
+          limits:
+            memory: "1000Mi"
+            cpu: "1"
+        livenessProbe:
+          httpGet:
+            path: /grid/console
+            port: 4444
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /grid/console
+            port: 4444
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+      nodeSelector:
+       role: master
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: selenium-hub
+  labels:
+    name: selenium-hub
+spec:
+  ports:
+  - port: 4444
+    targetPort: 4444
+    name: hub0
+  selector:
+    app: selenium-hub
+  type: NodePort
+  sessionAffinity: None
