@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: selenium-hub
 spec:
+  selector:
+   matchLabels:
+    app: selenium-hub
   replicas: 1
   template:
     metadata:
